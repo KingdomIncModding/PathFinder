@@ -125,6 +125,7 @@ namespace KingdomPathFinder
                 Check(initialFlow == serialized, "Highlight creation leaves native serialized flow unchanged");
                 Capture(Path.Combine(directory, "path-finder-hover.png"));
                 CapturePinStyles(Path.Combine(directory, "path-finder-pin-styles.png"));
+                VerifyOverlappingHighlights(center.World, directory);
 
                 var original = paths[incomingA].Source;
                 original.startColor = Color.red; original.endColor = Color.red;
@@ -248,6 +249,109 @@ namespace KingdomPathFinder
         {
             using (var sha = System.Security.Cryptography.SHA256.Create())
             using (var stream = File.OpenRead(path)) return BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
+        }
+
+        void VerifyOverlappingHighlights(WorldFlowElement center, string directory)
+        {
+            var objects = new List<GameObject>();
+            var synthetic = new List<RainbowPath>();
+            RainbowPath Make(Color color, params Vector3[] points)
+            {
+                var obj = new GameObject("PathFinderOverlapDiagnosticSource"); objects.Add(obj);
+                var line = obj.AddComponent<LineRenderer>(); line.useWorldSpace = true;
+                line.positionCount = points.Length; line.SetPositions(points);
+                var path = new RainbowPath(line, rainbowMaterial, color); synthetic.Add(path); return path;
+            }
+            void Set(RainbowPath path, params Vector3[] points) { path.Source.positionCount = points.Length; path.Source.SetPositions(points); }
+            Vector3 At(RainbowPath path, float coordinate, bool useY = false)
+            {
+                for (int i = 1; i < path.Display.Count; i++)
+                {
+                    var a = path.Display[i - 1]; var b = path.Display[i];
+                    float start = useY ? a.y : a.x, end = useY ? b.y : b.x;
+                    if (Mathf.Abs(end - start) < .001f || coordinate < Mathf.Min(start, end) - .001f || coordinate > Mathf.Max(start, end) + .001f) continue;
+                    return Vector3.Lerp(a, b, (coordinate - start) / (end - start));
+                }
+                throw new InvalidOperationException("Diagnostic sample not on displayed path");
+            }
+            try
+            {
+                var a = Make(Color.red, Vector3.zero, new Vector3(400, 0));
+                var b = Make(Color.cyan, Vector3.zero, new Vector3(400, 0));
+                var group = new List<RainbowPath> { a, b }; var layout = new PathLaneLayout();
+                layout.Refresh(group, 5);
+                Check(Mathf.Abs(At(a, 200).y - At(b, 200).y) >= 7.99f, "Fully coincident horizontal pipes retain two separate colored lanes");
+                Check(a.Display[0] == Vector3.zero && a.Display[a.Display.Count - 1] == new Vector3(400, 0), "Shared straight highlights still meet the original endpoints");
+                Check(a.Source.positionCount == 2 && a.Source.GetPosition(0) == Vector3.zero && a.Source.GetPosition(1) == new Vector3(400, 0), "Overlap layout never modifies the native pipe renderer positions");
+                Set(b, new Vector3(400, 0), Vector3.zero); layout.Refresh(group, 5);
+                Check(Mathf.Abs(At(a, 200).y - At(b, 200).y) >= 7.99f, "Opposite pipe directions use the same lane orientation");
+                Set(b, new Vector3(100, 0), new Vector3(300, 0)); layout.Refresh(group, 5);
+                Check(Mathf.Abs(At(a, 200).y - At(b, 200).y) >= 7.99f, "Partially coincident runs separate throughout their shared center");
+                Check(Mathf.Abs(At(a, 50).y) < .001f && Mathf.Abs(At(a, 350).y) < .001f, "Nonoverlapping portions stay on their original centerline");
+                Set(a, Vector3.zero, new Vector3(0, 400)); Set(b, new Vector3(0, 400), Vector3.zero); layout.Refresh(group, 5);
+                Check(Mathf.Abs(At(a, 200, true).x - At(b, 200, true).x) >= 7.99f, "Reversed vertical overlaps keep both colors visible");
+                Set(a, Vector3.zero, new Vector3(400, 400)); Set(b, Vector3.zero, new Vector3(400, 400)); layout.Refresh(group, 5);
+                Check(Mathf.Abs((At(a, 200).y - 200) - (At(b, 200).y - 200)) > 10, "Diagonal straight overlaps receive distinct parallel lanes");
+                Set(a, Vector3.zero, new Vector3(400, 0)); Set(b, new Vector3(200, -200), new Vector3(200, 200)); layout.Refresh(group, 5);
+                Check(a.Display.Count == 2 && b.Display.Count == 2, "Ordinary crossing pipes are not treated as shared straight runs");
+                Set(b, new Vector3(0, 20), new Vector3(400, 20)); layout.Refresh(group, 5);
+                Check(a.Display.Count == 2 && b.Display.Count == 2 && At(b, 200).y == 20, "Separate parallel pipes retain their existing geometry");
+                Set(a, Vector3.zero, new Vector3(200, 0), new Vector3(400, 0)); Set(b, Vector3.zero, new Vector3(400, 0)); layout.Refresh(group, 5);
+                Check(Mathf.Abs(At(a, 200).y - At(b, 200).y) >= 7.99f, "Redundant straight pipe handles do not pinch overlapping colors together");
+                var c = Make(Color.yellow, Vector3.zero, new Vector3(400, 0));
+                var d = Make(Color.green, new Vector3(400, 0), Vector3.zero);
+                group.Add(c); group.Add(d); layout.Refresh(group, 5);
+                var lanes = group.Select(p => At(p, 200).y).OrderBy(y => y).ToArray();
+                Check(lanes.Zip(lanes.Skip(1), (x, y) => y - x).All(gap => gap >= 7.99f), "Four fully aligned pipes keep four individually visible neon cores");
+                Check(group.All(p => p.Layers[2].startColor == p.Layers[2].endColor), "Overlap correction preserves one solid color per line");
+                b.Source.enabled = false; layout.Refresh(group, 5);
+                Check(b.Layers.All(l => !l.enabled), "Disabled sources cannot leave a highlight lane visible");
+                b.Source.enabled = true; layout.Refresh(group, 5);
+                Check(b.Layers.All(l => l.enabled), "Re-enabling a pipe restores its overlapping highlight");
+                layout.Refresh(group, 12); lanes = group.Select(p => At(p, 200).y).OrderBy(y => y).ToArray();
+                Check(lanes.Zip(lanes.Skip(1), (x, y) => y - x).All(gap => gap >= 19.19f), "Overlap spacing follows the maximum configured line width");
+                layout.Refresh(group, 2); lanes = group.Select(p => At(p, 200).y).OrderBy(y => y).ToArray();
+                Check(lanes.Zip(lanes.Skip(1), (x, y) => y - x).All(gap => gap >= 3.19f), "Overlap spacing follows the minimum configured line width");
+                group.Remove(c); group.Remove(d); b.Source.useWorldSpace = a.Source.useWorldSpace = false;
+                a.Source.transform.position = b.Source.transform.position = new Vector3(30, 20);
+                Set(a, Vector3.zero, new Vector3(400, 0)); Set(b, Vector3.zero, new Vector3(400, 0)); layout.Refresh(group, 5);
+                Check(Mathf.Abs(At(a, 230).y - At(b, 230).y) >= 7.99f, "Overlap layout supports transformed local-space source renderers");
+                Check(a.Layers[2].GetPosition(0) == Vector3.zero && a.Source.GetPosition(0) == Vector3.zero, "Local-space endpoints and native coordinates remain unchanged");
+                group.Remove(b); layout.Refresh(group, 5);
+                Check(a.Display.Count == 2 && At(a, 230).y == 20, "Removing the other highlight restores a single native straight line");
+                b.Source.useWorldSpace = a.Source.useWorldSpace = true;
+                a.Source.transform.position = b.Source.transform.position = Vector3.zero;
+                group.Add(b); Set(a, Vector3.zero, new Vector3(10, 0)); Set(b, Vector3.zero, new Vector3(10, 0)); layout.Refresh(group, 5);
+                Check(Mathf.Abs(At(a, 5).y - At(b, 5).y) >= 7.99f, "Short coincident runs also retain distinct colored cores");
+            }
+            finally
+            {
+                foreach (var path in synthetic) path.Dispose();
+                foreach (var obj in objects) { obj.SetActive(false); Destroy(obj); }
+            }
+
+            // Reproduce four real model pipes sharing exactly the same straight section.
+            var selected = paths.Keys.ToArray();
+            var bends = selected.Select(pipe => pipe.Nodes.ToArray()).ToArray();
+            try
+            {
+                foreach (var pipe in selected)
+                {
+                    pipe.Nodes.Clear(); pipe.Nodes.Add(new Vector2Int(-300, 440)); pipe.Nodes.Add(new Vector2Int(300, 440));
+                    pipe.World.UpdateLinePositions();
+                }
+                string state = GamePlayer.Current.ActiveFlow.ToJson().ToString();
+                Refresh(center);
+                var nativeLanes = paths.Values.Select(p => At(p, 0).y).OrderBy(y => y).ToArray();
+                Check(nativeLanes.Length == 4 && nativeLanes.Zip(nativeLanes.Skip(1), (x, y) => y - x).All(gap => gap >= 7.99f), "Real node pipes sharing a horizontal run render all four colors side by side");
+                Check(state == GamePlayer.Current.ActiveFlow.ToJson().ToString(), "Shared-run rendering leaves serialized pipe data untouched");
+                Capture(Path.Combine(directory, "path-finder-overlapping-paths.png"));
+            }
+            finally
+            {
+                for (int i = 0; i < selected.Length; i++) { selected[i].Nodes.Clear(); selected[i].Nodes.AddRange(bends[i]); selected[i].World.UpdateLinePositions(); }
+                Refresh(center);
+            }
         }
 
         static void Capture(string path)

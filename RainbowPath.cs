@@ -10,8 +10,13 @@ namespace KingdomPathFinder
         internal readonly LineRenderer Source;
         internal readonly Color Color;
         internal readonly LineRenderer[] Layers = new LineRenderer[3];
-        readonly List<Vector3> samples = new List<Vector3>();
+        internal readonly List<Vector3> Original = new List<Vector3>();
+        internal readonly List<Vector3> Route = new List<Vector3>();
+        internal readonly List<Vector3> Display = new List<Vector3>();
+        static int nextId;
+        internal readonly int Id = ++nextId;
         Vector3[] positions = Array.Empty<Vector3>();
+        bool wasVisible;
         internal bool Alive => Source && Source.gameObject.activeInHierarchy;
 
         internal RainbowPath(LineRenderer source, Material material, Color color)
@@ -38,18 +43,28 @@ namespace KingdomPathFinder
             }
         }
 
+        internal bool ReadGeometry()
+        {
+            bool changed = Original.Count != Source.positionCount;
+            bool visible = Source.enabled && Source.gameObject.activeInHierarchy;
+            changed |= wasVisible != visible;
+            wasVisible = visible;
+            for (int i = 0; i < Source.positionCount; i++)
+            {
+                var point = Source.GetPosition(i);
+                if (!Source.useWorldSpace) point = Source.transform.TransformPoint(point);
+                if (i >= Original.Count) Original.Add(point);
+                else { changed |= (Original[i] - point).sqrMagnitude > .000001f; Original[i] = point; }
+            }
+            if (Original.Count > Source.positionCount) Original.RemoveRange(Source.positionCount, Original.Count - Source.positionCount);
+            return changed;
+        }
+
         internal void Refresh(float width)
         {
-            samples.Clear();
-            if (Source.positionCount > 0) samples.Add(Source.GetPosition(0));
-            for (int i = 1; i < Source.positionCount; i++)
-            {
-                var a = Source.GetPosition(i - 1);
-                var b = Source.GetPosition(i);
-                samples.Add(b);
-            }
-            if (positions.Length != samples.Count) positions = new Vector3[samples.Count];
-            samples.CopyTo(positions);
+            if (positions.Length != Display.Count) positions = new Vector3[Display.Count];
+            for (int i = 0; i < Display.Count; i++)
+                positions[i] = Source.useWorldSpace ? Display[i] : Source.transform.InverseTransformPoint(Display[i]);
             for (int i = 0; i < Layers.Length; i++)
             {
                 var line = Layers[i];

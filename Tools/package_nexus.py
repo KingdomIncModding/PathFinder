@@ -46,9 +46,9 @@ def main():
     reports = [json.loads((PROJECT / 'Verification' / name).read_text())
                for name in ('runtime-tests.json', 'compatibility-tests.json')]
     for report in reports:
-        assert report['passed'] and report['count'] >= 77 and not report['error']
+        assert report['passed'] and report['count'] >= 100 and not report['error']
         assert report['version'] == VERSION and report['dllSha256'] == sha(dll)
-    assert 'Path Finder diagnostic passed: 77 checks.' in (PROJECT / 'Verification/unity-isolated.log').read_text()
+    assert f"Path Finder diagnostic passed: {reports[0]['count']} checks." in (PROJECT / 'Verification/unity-isolated.log').read_text()
     OUT.mkdir(parents=True, exist_ok=True)
     payload = {'BepInEx/plugins/PathFinder/PathFinder.dll': dll}
     for name in ('README.txt', 'CHANGELOG.txt'):
@@ -57,7 +57,7 @@ def main():
     archive(player_zip, payload)
 
     # Never recurse through Verification's runtime junctions or include game binaries.
-    names = ['PathFinder.csproj', 'PathFinderPlugin.cs', 'RainbowPath.cs', 'PathPin.cs',
+    names = ['PathFinder.csproj', 'PathFinderPlugin.cs', 'RainbowPath.cs', 'PathLaneLayout.cs', 'PathPin.cs',
              'RuntimeCheck.cs', 'README.md', '.gitignore', 'install.ps1', 'verify-isolated.ps1',
              'Tools/package_nexus.py', 'Nexus/README.txt', 'Nexus/CHANGELOG.txt',
              'Nexus/NEXUS_DESCRIPTION.bbcode.txt', 'Nexus/SUMMARY.txt',
@@ -69,7 +69,7 @@ def main():
         (OUT / name).write_bytes((PROJECT / 'Nexus' / name).read_bytes())
     (OUT / 'SUMMARY.txt').write_bytes((PROJECT / 'Nexus/SUMMARY.txt').read_bytes())
     screenshots = OUT / 'Screenshots'; screenshots.mkdir(exist_ok=True)
-    for name in ('path-finder-hover.png', 'path-finder-pinned.png', 'path-finder-clear.png', 'path-finder-pin-styles.png'):
+    for name in ('path-finder-hover.png', 'path-finder-pinned.png', 'path-finder-clear.png', 'path-finder-pin-styles.png', 'path-finder-overlapping-paths.png'):
         (screenshots / name).write_bytes((PROJECT / 'Verification' / name).read_bytes())
     archives = {p.name: {'bytes': p.stat().st_size, 'sha256': sha(p.read_bytes())} for p in (player_zip, source_zip)}
     result = {'name': 'Path Finder', 'version': VERSION, 'publication': 'local preparation only',

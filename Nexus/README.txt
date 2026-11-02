@@ -1,7 +1,9 @@
-Path Finder 1.0.1 by Urakka
+Path Finder 1.0.2 by Urakka
 
 Hover any node to highlight pipes to its immediate parents and immediate children.
 Each pipe has ONE solid bright neon color from a rainbow palette, with a glow.
+Overlapping straight sections use parallel colored lanes so each line stays visible.
+Only highlights move; native pipe positions and saved bends are unchanged.
 
 Click the TINY pin at a node's top-left to keep its direct paths highlighted.
 Pins have bronze bevels, dark enamel, a tilted gold tack and a cyan locked-state rim.

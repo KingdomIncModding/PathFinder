@@ -16,7 +16,7 @@ namespace KingdomPathFinder
     [BepInPlugin(Id, "Path Finder", Version)]
     public sealed partial class PathFinderPlugin : BaseUnityPlugin
     {
-        public const string Id = "urakka.kingdominc.pathfinder", Version = "1.0.1";
+        public const string Id = "urakka.kingdominc.pathfinder", Version = "1.0.2";
         internal static bool Diagnostic => Environment.GetCommandLineArgs().Contains("-pathfinder-smoke");
         readonly Dictionary<FlowPipe, RainbowPath> paths = new Dictionary<FlowPipe, RainbowPath>();
         readonly HashSet<FlowPipe> desired = new HashSet<FlowPipe>();
@@ -26,6 +26,8 @@ namespace KingdomPathFinder
         readonly HashSet<WorldFlowElement> pinned = new HashSet<WorldFlowElement>();
         readonly HashSet<FlowPipe> nodePaths = new HashSet<FlowPipe>();
         readonly List<WorldFlowElement> removedNodes = new List<WorldFlowElement>();
+        readonly List<RainbowPath> visiblePaths = new List<RainbowPath>();
+        readonly PathLaneLayout laneLayout = new PathLaneLayout();
         internal static PathFinderPlugin Instance;
         ConfigEntry<bool> enabledSetting;
         ConfigEntry<float> widthSetting;
@@ -158,8 +160,10 @@ namespace KingdomPathFinder
                     path = new RainbowPath(source, rainbowMaterial, ChooseColor());
                     paths.Add(pipe, path);
                 }
-                path.Refresh(widthSetting.Value);
             }
+            visiblePaths.Clear();
+            foreach (var path in paths.Values) if (path.Alive) visiblePaths.Add(path);
+            laneLayout.Refresh(visiblePaths, widthSetting.Value);
         }
 
         static readonly Color[] Palette = {

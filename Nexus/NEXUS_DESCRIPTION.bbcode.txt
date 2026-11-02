@@ -1,4 +1,4 @@
-[b]Path Finder - 1.0.1[/b]
+[b]Path Finder - 1.0.2[/b]
 See a node's immediate input and output connections at a glance.
 [url=https://github.com/urakkaamyx/KingdomInc_PathFinder/releases/latest]GitHub downloads[/url] | [url=https://github.com/urakkaamyx/KingdomInc_PathFinder]Source and bug reports[/url]
 
@@ -10,6 +10,7 @@ See a node's immediate input and output connections at a glance.
 [*]Bronze bevels, burgundy enamel, a tilted gold tack and cyan locked-state glow.
 [*]Multiple pins work together while you hover another node.
 [*]Follows bent pipes, mirrored endpoints, and rewiring.
+[*]Shared straight sections separate into parallel lanes so overlapping colors stay visible.
 [/list]
 
 [b]Requirements[/b]
@@ -36,8 +37,8 @@ Manual installation supported. Vortex deployment untested.
 [b]Removal[/b]
 Close the game and remove BepInEx/plugins/PathFinder. No save cleanup needed.
 
-[b]Changes in 1.0.1[/b]
-Restyled the tiny toggle pins with bronze bevels, dark enamel, hover/pressed feedback and a cyan locked-state rim.
+[b]Changes in 1.0.2[/b]
+Overlapping straight pipes now keep their individual solid colors visible in parallel highlight lanes. Native pipe geometry and saved bends remain unchanged.
 
 [b]Credits and permissions[/b]
 Author: Urakka. Procedural pin artwork; no game assets bundled.

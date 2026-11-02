@@ -1,8 +1,10 @@
-# Path Finder 1.0.1
+# Path Finder 1.0.2
 
 [Download the latest release](https://github.com/urakkaamyx/KingdomInc_PathFinder/releases/latest) · [Source and issues](https://github.com/urakkaamyx/KingdomInc_PathFinder)
 
 Hover a Kingdom Inc node to highlight every pipe to its **immediate parents and immediate children**. Each line uses **one solid bright neon color**, chosen from a rainbow palette, with a wider glow. Highlights follow the existing pipe bends and mirrored ports. Indirect ancestors and descendants stay unhighlighted.
+
+When highlighted pipes share a straight section, their colors separate into narrow parallel lanes and fan back into the original path at either end. This keeps overlapping colors visible without changing the native pipes, their colliders, or saved bend positions. Ordinary crossings and separate lines retain their existing shape.
 
 A **tiny pin button at each node's top-left corner** locks its direct paths on screen after you move the mouse away. The button has a beveled bronze frame, a burgundy enamel face and a tilted gold thumbtack. Hover brightens the metal; clicking adds a cyan rim and glint. Click again to unpin. You can pin multiple nodes and hover another node at the same time; shared pipes are drawn once and keep their color while visible. Pins last for the current loaded kingdom session and are not written into saves. Hidden kingdoms do not show their pinned paths; switching back restores them. Deleting a node removes its pin.
 
