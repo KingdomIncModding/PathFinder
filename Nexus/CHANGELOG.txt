@@ -1,0 +1,12 @@
+1.0.1
+- Restyled the tiny pins with beveled bronze frames, burgundy enamel and tilted gold tacks.
+- Added a smooth hover highlight, pressed feedback and a cyan rim/glint when pinned.
+- Kept the same tiny button size and pin/unpin behavior.
+
+1.0.0
+- Hover a node to highlight pipes to every immediate parent and immediate child.
+- One solid bright neon color per line, selected from a rainbow palette, with glow.
+- Tiny top-left pin button on each node; click to lock highlights, click again to clear.
+- Multiple pins and hovered nodes share highlights without duplicating pipes.
+- Follow native bends, mirrored endpoints, rewiring and node visibility.
+- Pins remain session-only; no new saved data or node types.

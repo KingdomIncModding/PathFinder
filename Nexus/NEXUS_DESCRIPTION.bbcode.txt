@@ -1,0 +1,48 @@
+[b]Path Finder - 1.0.1[/b]
+See a node's immediate input and output connections at a glance.
+[url=https://github.com/urakkaamyx/KingdomInc_PathFinder/releases/latest]GitHub downloads[/url] | [url=https://github.com/urakkaamyx/KingdomInc_PathFinder]Source and bug reports[/url]
+
+[b]Features[/b]
+[list]
+[*]Hover a node to highlight its direct parents' and direct children's pipes.
+[*]One solid bright neon color per line, chosen from a rainbow palette, with a glow.
+[*]A tiny pin at each node's top-left locks those highlights until clicked again.
+[*]Bronze bevels, burgundy enamel, a tilted gold tack and cyan locked-state glow.
+[*]Multiple pins work together while you hover another node.
+[*]Follows bent pipes, mirrored endpoints, and rewiring.
+[/list]
+
+[b]Requirements[/b]
+Kingdom Inc Unity Mono build. Tested on Release v1.0.10, Unity 6000.3.27f2.
+BepInEx 5, tested with 5.4.23.6. No other mod dependency.
+[url=https://github.com/BepInEx/BepInEx]BepInEx loader[/url]
+
+[b]Installation / updating[/b]
+Close the game and extract the player ZIP into its directory.
+Expected file: BepInEx/plugins/PathFinder/PathFinder.dll
+Restart, then hover a connected node or click its tiny pin. Replace this DLL for updates.
+
+[b]Usage[/b]
+Only immediate connections are highlighted. Each line has a single neon color.
+Click the top-left pin to keep paths visible; cyan means pinned. Click again to unpin.
+Pins last for the loaded kingdom session and are not saved. Eight colors repeat when needed.
+Settings: BepInEx/config/urakka.kingdominc.pathfinder.cfg (Enabled and Width).
+
+[b]Compatibility and known limits[/b]
+Isolated tests cover native nodes with actual mouse/raycast input, rewiring, pinning, loops, and cleanup.
+The companion test loads PartyNode, SharableBlueprints, KingdomFactoryApi and LedgerMod with the native test graph; it does not retest every companion feature or custom-node layout.
+Manual installation supported. Vortex deployment untested.
+
+[b]Removal[/b]
+Close the game and remove BepInEx/plugins/PathFinder. No save cleanup needed.
+
+[b]Changes in 1.0.1[/b]
+Restyled the tiny toggle pins with bronze bevels, dark enamel, hover/pressed feedback and a cyan locked-state rim.
+
+[b]Credits and permissions[/b]
+Author: Urakka. Procedural pin artwork; no game assets bundled.
+Promotional thumbnail artwork was generated with OpenAI's image generation tool from the shared Kingdom Inc mod template. Gameplay screenshots are captured from the actual game; promotional artwork is not a screenshot.
+Diagnostic workflow adapted from the user's PartyNode/LedgerMod projects. Source license not selected.
+
+[b]Troubleshooting[/b]
+Include BepInEx/LogOutput.log, game/mod versions, and affected node types in reports.
