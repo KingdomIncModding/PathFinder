@@ -61,18 +61,13 @@ def main():
              'RuntimeCheck.cs', 'README.md', '.gitignore', 'install.ps1', 'verify-isolated.ps1',
              'Tools/package_nexus.py', 'Nexus/README.txt', 'Nexus/CHANGELOG.txt',
              'Nexus/NEXUS_DESCRIPTION.bbcode.txt', 'Nexus/SUMMARY.txt',
-             'Assets/path-finder-hover.png', 'Assets/path-finder-pin-styles.png',
-             'Assets/path-finder-thumbnail-v1.png']
+             'Assets/path-finder-hover.png', 'Assets/path-finder-pin-styles.png']
     sources = {'_Mods/PathFinder/' + name: (PROJECT / name).read_bytes() for name in names}
     source_zip = OUT / f'KingdomInc-PathFinder-{VERSION}-source.zip'
     archive(source_zip, sources)
     for name in ('NEXUS_DESCRIPTION.bbcode.txt', 'CHANGELOG.txt'):
         (OUT / name).write_bytes((PROJECT / 'Nexus' / name).read_bytes())
     (OUT / 'SUMMARY.txt').write_bytes((PROJECT / 'Nexus/SUMMARY.txt').read_bytes())
-    media_notes = PROJECT / 'Nexus/MEDIA.md'
-    if media_notes.is_file():
-        (OUT / 'MEDIA.txt').write_bytes(media_notes.read_bytes())
-    (OUT / 'path-finder-thumbnail-v1.png').write_bytes((PROJECT / 'Assets/path-finder-thumbnail-v1.png').read_bytes())
     screenshots = OUT / 'Screenshots'; screenshots.mkdir(exist_ok=True)
     for name in ('path-finder-hover.png', 'path-finder-pinned.png', 'path-finder-clear.png', 'path-finder-pin-styles.png'):
         (screenshots / name).write_bytes((PROJECT / 'Verification' / name).read_bytes())

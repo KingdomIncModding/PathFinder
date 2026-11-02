@@ -41,7 +41,6 @@ Restyled the tiny toggle pins with bronze bevels, dark enamel, hover/pressed fee
 
 [b]Credits and permissions[/b]
 Author: Urakka. Procedural pin artwork; no game assets bundled.
-Promotional thumbnail artwork was generated with OpenAI's image generation tool from the shared Kingdom Inc mod template. Gameplay screenshots are captured from the actual game; promotional artwork is not a screenshot.
 Diagnostic workflow adapted from the user's PartyNode/LedgerMod projects. Source license not selected.
 
 [b]Troubleshooting[/b]

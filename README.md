@@ -55,7 +55,7 @@ Packaging requires matching built, installed, and tested DLLs and passing isolat
 
 ## Credits
 
-Author: Urakka. Pin art is drawn procedurally; no game assets are redistributed. Promotional thumbnail artwork was generated with OpenAI's image generation tool using the shared Kingdom Inc mod artwork template; it is not a gameplay screenshot. The isolated diagnostic workflow follows the existing PartyNode/LedgerMod projects in this workspace. Source licensing is not yet selected.
+Author: Urakka. Pin art is drawn procedurally; no game assets are redistributed. The isolated diagnostic workflow follows the existing PartyNode/LedgerMod projects in this workspace. Source licensing is not yet selected.
 
 Plugin ID: `urakka.kingdominc.pathfinder`. Assembly: `PathFinder.dll`. Repository: [urakkaamyx/KingdomInc_PathFinder](https://github.com/urakkaamyx/KingdomInc_PathFinder).
 
