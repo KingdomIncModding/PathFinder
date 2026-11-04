@@ -232,12 +232,14 @@ namespace KingdomPathFinder
             yield return new WaitForSecondsRealtime(.2f);
             if (error == null) try { Check(pinned.Count == 0 && paths.Count == 0, "Deleting a pinned node removes its pin and highlights"); }
             catch (Exception ex) { error = ex.ToString(); }
+            if (error == null) yield return VerifyLeylineCompatibility(directory, mouse, message => error = error ?? message);
             if (mouse != null) InputSystem.RemoveDevice(mouse);
             var report = new JsonObject
             {
                 { "passed", error == null }, { "version", Version }, { "gameVersion", Application.version },
                 { "unityVersion", Application.unityVersion }, { "bepInExVersion", typeof(BaseUnityPlugin).Assembly.GetName().Version.ToString() },
                 { "dllSha256", HashFile(typeof(PathFinderPlugin).Assembly.Location) },
+                { "leylineCompatibility", leyline.Available },
                 { "checks", new JsonArray(checks.Select(c => new JsonValue(c)).ToArray()) }, { "count", checks.Count }, { "error", error ?? "" }
             };
             File.WriteAllText(Path.Combine(directory, "runtime-tests.json"), report.ToString());

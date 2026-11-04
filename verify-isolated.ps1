@@ -16,7 +16,7 @@ New-Item -ItemType Junction -Path (Join-Path $bep 'core') -Value (Join-Path $gam
 Copy-Item -LiteralPath (Join-Path $gameRoot 'BepInEx\config\BepInEx.cfg') -Destination (Join-Path $bep 'config\BepInEx.cfg')
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'bin\Release\netstandard2.1\PathFinder.dll') -Destination (Join-Path $bep 'plugins\PathFinder\PathFinder.dll')
 if ($WithExistingPlugins) {
-    foreach ($plugin in @('PartyNode','SharableBlueprints','KingdomFactoryApi','LedgerMod')) {
+    foreach ($plugin in @('PartyNode','SharableBlueprints','KingdomFactoryApi','LedgerMod','LeylineConduits')) {
         $pluginSource = Join-Path $gameRoot ('BepInEx\plugins\' + $plugin + '\' + $plugin + '.dll')
         if (-not (Test-Path -LiteralPath $pluginSource)) { throw "Missing companion plugin: $pluginSource" }
         $pluginTarget = Join-Path $bep ('plugins\' + $plugin)

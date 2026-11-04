@@ -1,4 +1,4 @@
-[b]Path Finder - 1.0.2[/b]
+[b]Path Finder - 1.0.3[/b]
 See a node's immediate input and output connections at a glance.
 [url=https://github.com/urakkaamyx/KingdomInc_PathFinder/releases/latest]GitHub downloads[/url] | [url=https://github.com/urakkaamyx/KingdomInc_PathFinder]Source and bug reports[/url]
 
@@ -11,6 +11,7 @@ See a node's immediate input and output connections at a glance.
 [*]Multiple pins work together while you hover another node.
 [*]Follows bent pipes, mirrored endpoints, and rewiring.
 [*]Shared straight sections separate into parallel lanes so overlapping colors stay visible.
+[*]Optional Leyline Conduits support: matching opposite-mode conduits and their pipes highlight together. Pin before switching tabs to reveal partners on another tab.
 [/list]
 
 [b]Requirements[/b]
@@ -37,8 +38,8 @@ Manual installation supported. Vortex deployment untested.
 [b]Removal[/b]
 Close the game and remove BepInEx/plugins/PathFinder. No save cleanup needed.
 
-[b]Changes in 1.0.2[/b]
-Overlapping straight pipes now keep their individual solid colors visible in parallel highlight lanes. Native pipe geometry and saved bends remain unchanged.
+[b]Changes in 1.0.3[/b]
+Added optional Leyline Conduits compatibility, tested with 0.2.0. Hover or pin a conduit or its directly wired machine to highlight matching opposite-mode conduits and their pipes. The full highlighted leyline route, including branches and conduit outlines, uses one shared neon color. Pinned links remain discoverable across workshop tabs. Channels, transfers and saves remain unchanged.
 
 [b]Credits and permissions[/b]
 Author: Urakka. Procedural pin artwork; no game assets bundled.

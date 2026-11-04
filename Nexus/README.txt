@@ -1,4 +1,4 @@
-Path Finder 1.0.2 by Urakka
+Path Finder 1.0.3 by Urakka
 
 Hover any node to highlight pipes to its immediate parents and immediate children.
 Each pipe has ONE solid bright neon color from a rainbow palette, with a glow.
@@ -9,6 +9,14 @@ Click the TINY pin at a node's top-left to keep its direct paths highlighted.
 Pins have bronze bevels, dark enamel, a tilted gold tack and a cyan locked-state rim.
 Click again to unpin. Cyan means pinned. Multiple pins and hover work together.
 Pins are session-only; saves are unchanged. Indirect ancestors/descendants are excluded.
+
+OPTIONAL LEYLINE CONDUITS SUPPORT
+Hover or pin a conduit, or its directly wired machine, to highlight matching
+opposite-mode conduits and their pipes. The whole leyline path shares one color,
+including branches and the outlines identifying connected tiles.
+Pin before switching workshop tabs to find its partners on the other tab.
+Names follow Leyline Conduits matching rules; tested with version 0.2.0.
+Leyline Conduits is optional and no extra save data is created.
 
 REQUIREMENTS
 Kingdom Inc Unity Mono build and BepInEx 5.

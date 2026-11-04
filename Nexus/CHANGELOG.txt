@@ -1,3 +1,10 @@
+1.0.3
+- Add optional compatibility with Leyline Conduits 0.2.0.
+- Use one shared neon color across each leyline route, including branches, connected pipes and conduit outlines.
+- Hover or pin a conduit or its directly wired machine to highlight matching opposite-mode conduits and their pipes.
+- Identify connected conduit tiles with neon outlines that leave pins and settings clickable.
+- Follow live channel changes and pinned connections across workshop tabs without changing routing or saves.
+
 1.0.2
 - Keep every color visible when highlighted pipes overlap in a straight line.
 - Separate shared straight sections into parallel lanes, with short fan-outs at either end.

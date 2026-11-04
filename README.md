@@ -1,4 +1,4 @@
-# Path Finder 1.0.2
+# Path Finder 1.0.3
 
 [Download the latest release](https://github.com/urakkaamyx/KingdomInc_PathFinder/releases/latest) · [Source and issues](https://github.com/urakkaamyx/KingdomInc_PathFinder)
 
@@ -7,6 +7,8 @@ Hover a Kingdom Inc node to highlight every pipe to its **immediate parents and 
 When highlighted pipes share a straight section, their colors separate into narrow parallel lanes and fan back into the original path at either end. This keeps overlapping colors visible without changing the native pipes, their colliders, or saved bend positions. Ordinary crossings and separate lines retain their existing shape.
 
 A **tiny pin button at each node's top-left corner** locks its direct paths on screen after you move the mouse away. The button has a beveled bronze frame, a burgundy enamel face and a tilted gold thumbtack. Hover brightens the metal; clicking adds a cyan rim and glint. Click again to unpin. You can pin multiple nodes and hover another node at the same time; shared pipes are drawn once and keep their color while visible. Pins last for the current loaded kingdom session and are not written into saves. Hidden kingdoms do not show their pinned paths; switching back restores them. Deleting a node removes its pin.
+
+When **Leyline Conduits** is installed, hovering or pinning a conduit (or a machine directly wired to it) also highlights matching opposite-mode conduits and their attached pipes. All highlighted pipes and conduit outlines on that leyline share one neon color, including branches and partners on other tabs. Different named leylines use separate colors from the palette. Channel matching follows Leyline Conduits' case-insensitive names. Pin the source before switching workshop tabs to find its visible partners there. Renaming, disconnecting and deleting conduits updates highlights immediately. No new connection or save data is created; Leyline Conduits remains optional. Verified with Leyline Conduits **0.2.0**.
 
 ## Install, update, and remove
 
@@ -51,7 +53,7 @@ python _Mods/PathFinder/Tools/package_nexus.py
 
 The diagnostic launches a private runtime with a disposable kingdom. Save writes, latest-save loading, and Steam achievements are blocked. It exercises actual UI raycasts and mouse input, both direct parents and children, solid colors, bent/straight/mirrored pipes, rewiring, loops, pin/unpin clicks, combined pins and hover, visibility changes, cleanup, and deletion of a pinned node. Reports and gameplay screenshots are under `Verification/`.
 
-The optional companion run loads installed PartyNode, SharableBlueprints, KingdomFactoryApi, and LedgerMod DLLs, with the API on a private port. It checks Path Finder's native-node fixture with those mods loaded; it does not retest every companion feature or custom-node layout.
+The optional companion run loads installed PartyNode, SharableBlueprints, KingdomFactoryApi, LedgerMod, and LeylineConduits DLLs, with the API on a private port. It checks the native-node fixture and Leyline Conduits hover, matching channels, opposite modes, pins, retuning, tab switching and cleanup. It does not retest every companion feature or custom-node layout.
 
 Packaging requires matching built, installed, and tested DLLs and passing isolated/companion reports. It checks archive paths, clean extraction, and SHA-256. Game binaries, BepInEx binaries, saves, and configuration files are excluded.
 

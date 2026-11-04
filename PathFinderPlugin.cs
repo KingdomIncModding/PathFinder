@@ -14,9 +14,10 @@ using UnityEngine.EventSystems;
 namespace KingdomPathFinder
 {
     [BepInPlugin(Id, "Path Finder", Version)]
+    [BepInDependency(LeylineCompatibility.PluginId, BepInDependency.DependencyFlags.SoftDependency)]
     public sealed partial class PathFinderPlugin : BaseUnityPlugin
     {
-        public const string Id = "urakka.kingdominc.pathfinder", Version = "1.0.2";
+        public const string Id = "urakka.kingdominc.pathfinder", Version = "1.0.3";
         internal static bool Diagnostic => Environment.GetCommandLineArgs().Contains("-pathfinder-smoke");
         readonly Dictionary<FlowPipe, RainbowPath> paths = new Dictionary<FlowPipe, RainbowPath>();
         readonly HashSet<FlowPipe> desired = new HashSet<FlowPipe>();
@@ -28,6 +29,11 @@ namespace KingdomPathFinder
         readonly List<WorldFlowElement> removedNodes = new List<WorldFlowElement>();
         readonly List<RainbowPath> visiblePaths = new List<RainbowPath>();
         readonly PathLaneLayout laneLayout = new PathLaneLayout();
+        readonly HashSet<FlowElement> desiredConduits = new HashSet<FlowElement>();
+        readonly Dictionary<FlowElement, ConduitHighlight> conduits = new Dictionary<FlowElement, ConduitHighlight>();
+        readonly List<FlowElement> removedConduits = new List<FlowElement>();
+        LeylineCompatibility leyline;
+        readonly Dictionary<string, Color> leylineColors = new Dictionary<string, Color>(StringComparer.OrdinalIgnoreCase);
         internal static PathFinderPlugin Instance;
         ConfigEntry<bool> enabledSetting;
         ConfigEntry<float> widthSetting;
@@ -41,6 +47,7 @@ namespace KingdomPathFinder
         void Awake()
         {
             Instance = this;
+            leyline = new LeylineCompatibility();
             enabledSetting = Config.Bind("Highlights", "Enabled", true, "Highlight immediate input and output pipes while hovering a node.");
             widthSetting = Config.Bind("Highlights", "Width", 5f,
                 new ConfigDescription("Width of each solid neon line in world units; glow scales with it.", new AcceptableValueRange<float>(2f, 12f)));
@@ -55,6 +62,7 @@ namespace KingdomPathFinder
                 StartCoroutine(RuntimeCheck());
             }
             Logger.LogInfo("Path Finder ready: hover or pin a node for solid neon paths to its immediate parents and children.");
+            if (leyline.Available) Logger.LogInfo("Leyline Conduits compatibility enabled.");
         }
 
         static void AddPinAfterSet(WorldFlowElement __instance) => Instance?.EnsurePin(__instance);
@@ -121,7 +129,7 @@ namespace KingdomPathFinder
             foreach (var output in node.Outputs) AddConnected(output.ConnectedPipe, node, result);
         }
 
-        static void AddConnected(FlowPipe pipe, FlowElement node, HashSet<FlowPipe> result)
+        internal static void AddConnected(FlowPipe pipe, FlowElement node, HashSet<FlowPipe> result)
         {
             if (pipe?.ConnectedInput == null || pipe.ConnectedOutput == null) return;
             if (pipe.ConnectedInput.ConnectedPipe != pipe || pipe.ConnectedOutput.ConnectedPipe != pipe) return;
@@ -131,10 +139,14 @@ namespace KingdomPathFinder
         internal void Refresh(WorldFlowElement node)
         {
             CollectDirectPaths(node && node.isActiveAndEnabled ? node.Element : null, desired);
+            desiredConduits.Clear();
+            leyline.Collect(node && node.isActiveAndEnabled ? node.Element : null, desired, desiredConduits);
             removedNodes.Clear();
             foreach (var locked in pinned)
             {
                 if (!locked) { removedNodes.Add(locked); continue; }
+                // Keep a pinned leyline discoverable when its partner is on another tab.
+                leyline.Collect(locked.Element, desired, desiredConduits);
                 if (!locked.isActiveAndEnabled) continue;
                 CollectDirectPaths(locked.Element, nodePaths);
                 desired.UnionWith(nodePaths);
@@ -157,13 +169,57 @@ namespace KingdomPathFinder
                         if (!shader) throw new InvalidOperationException("The game's unlit sprite shader is unavailable.");
                         rainbowMaterial = new Material(shader) { name = "PathFinder.NeonRainbow" };
                     }
-                    path = new RainbowPath(source, rainbowMaterial, ChooseColor());
+                    path = new RainbowPath(source, rainbowMaterial, TryLeylineColor(pipe, out var tint) ? tint : ChooseColor());
                     paths.Add(pipe, path);
                 }
+                else if (TryLeylineColor(pipe, out var tint)) path.SetColor(tint);
             }
             visiblePaths.Clear();
             foreach (var path in paths.Values) if (path.Alive) visiblePaths.Add(path);
             laneLayout.Refresh(visiblePaths, widthSetting.Value);
+            RefreshConduits();
+        }
+
+        void RefreshConduits()
+        {
+            removedConduits.Clear();
+            foreach (var entry in conduits)
+                if (!desiredConduits.Contains(entry.Key) || !entry.Key.World || !entry.Key.World.isActiveAndEnabled || !entry.Value)
+                    removedConduits.Add(entry.Key);
+            foreach (var element in removedConduits)
+            {
+                var graphic = conduits[element];
+                if (graphic) { graphic.enabled = false; Destroy(graphic.gameObject); }
+                conduits.Remove(element);
+            }
+            foreach (var element in desiredConduits)
+            {
+                if (!element.World || !element.World.isActiveAndEnabled) continue;
+                if (!conduits.TryGetValue(element, out var graphic))
+                {
+                    graphic = ConduitHighlight.Create(element.World, LeylineColor(element)); conduits.Add(element, graphic);
+                }
+                graphic.color = LeylineColor(element);
+                graphic.SetWidth(widthSetting.Value);
+            }
+        }
+
+        bool TryLeylineColor(FlowPipe pipe, out Color tint)
+        {
+            var from = pipe.ConnectedOutput?.Parent; var to = pipe.ConnectedInput?.Parent;
+            var conduit = from != null && desiredConduits.Contains(from) ? from : to != null && desiredConduits.Contains(to) ? to : null;
+            tint = conduit == null ? default : LeylineColor(conduit);
+            return conduit != null;
+        }
+
+        Color LeylineColor(FlowElement conduit)
+        {
+            var name = leyline.Channel(conduit);
+            if (!leylineColors.TryGetValue(name, out var tint))
+            {
+                tint = ChooseColor(); leylineColors.Add(name, tint);
+            }
+            return tint;
         }
 
         static readonly Color[] Palette = {
@@ -180,6 +236,7 @@ namespace KingdomPathFinder
             {
                 int count = 0;
                 foreach (var path in paths.Values) if (path.Color == Palette[i]) count++;
+                foreach (var tint in leylineColors.Values) if (tint == Palette[i]) count++;
                 if (count < least) { least = count; best = i; }
             }
             return Palette[best];
@@ -189,6 +246,8 @@ namespace KingdomPathFinder
         {
             foreach (var path in paths.Values) path.Dispose();
             paths.Clear();
+            foreach (var graphic in conduits.Values) if (graphic) { graphic.enabled = false; Destroy(graphic.gameObject); }
+            conduits.Clear(); desiredConduits.Clear();
         }
 
         void OnDisable() => ClearPaths();

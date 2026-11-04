@@ -8,7 +8,7 @@ namespace KingdomPathFinder
     internal sealed class RainbowPath : IDisposable
     {
         internal readonly LineRenderer Source;
-        internal readonly Color Color;
+        internal Color Color { get; private set; }
         internal readonly LineRenderer[] Layers = new LineRenderer[3];
         internal readonly List<Vector3> Original = new List<Vector3>();
         internal readonly List<Vector3> Route = new List<Vector3>();
@@ -58,6 +58,17 @@ namespace KingdomPathFinder
             }
             if (Original.Count > Source.positionCount) Original.RemoveRange(Source.positionCount, Original.Count - Source.positionCount);
             return changed;
+        }
+
+        internal void SetColor(Color color)
+        {
+            if (Color == color) return;
+            Color = color;
+            for (int i = 0; i < Layers.Length; i++)
+            {
+                var tint = color; tint.a = i == 2 ? 1f : i == 1 ? .34f : .13f;
+                Layers[i].startColor = tint; Layers[i].endColor = tint;
+            }
         }
 
         internal void Refresh(float width)
