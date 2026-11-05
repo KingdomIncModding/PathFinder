@@ -87,6 +87,12 @@ namespace KingdomPathFinder
             if (error == null) try
             {
                 Check(center.World && incomingA.World, "Disposable kingdom built with native node and pipe renderers");
+                VerifyResearchUnlock(center.World);
+            }
+            catch (Exception ex) { error = ex.ToString(); }
+            yield return new WaitForSecondsRealtime(.3f);
+            if (error == null) try
+            {
                 WorldFlowCamera.Instance.SetZoomLevel(2);
                 var cam = Camera.main; cam.transform.position = new Vector3(0, 0, cam.transform.position.z);
                 Canvas.ForceUpdateCanvases();
@@ -95,6 +101,10 @@ namespace KingdomPathFinder
                 initialFlow = GamePlayer.Current.ActiveFlow.ToJson().ToString();
                 InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
                 mouse = InputSystem.AddDevice<Mouse>("PathFinderDiagnosticMouse");
+                mouse.MakeCurrent();
+                Assets.Behaviour.Input.PlayerInput.Asset.devices = new InputDevice[] { mouse };
+                var diagnosticModule = EventSystem.current.currentInputModule as UnityEngine.InputSystem.UI.InputSystemUIInputModule;
+                if (diagnosticModule?.actionsAsset != null) diagnosticModule.actionsAsset.devices = new InputDevice[] { mouse };
                 InputSystem.QueueStateEvent(mouse, new MouseState { position = hoverPosition });
             }
             catch (Exception ex) { error = ex.ToString(); }
@@ -233,6 +243,9 @@ namespace KingdomPathFinder
             if (error == null) try { Check(pinned.Count == 0 && paths.Count == 0, "Deleting a pinned node removes its pin and highlights"); }
             catch (Exception ex) { error = ex.ToString(); }
             if (error == null) yield return VerifyLeylineCompatibility(directory, mouse, message => error = error ?? message);
+            Assets.Behaviour.Input.PlayerInput.Asset.devices = null;
+            var restoredModule = EventSystem.current.currentInputModule as UnityEngine.InputSystem.UI.InputSystemUIInputModule;
+            if (restoredModule?.actionsAsset != null) restoredModule.actionsAsset.devices = null;
             if (mouse != null) InputSystem.RemoveDevice(mouse);
             var report = new JsonObject
             {
@@ -240,6 +253,7 @@ namespace KingdomPathFinder
                 { "unityVersion", Application.unityVersion }, { "bepInExVersion", typeof(BaseUnityPlugin).Assembly.GetName().Version.ToString() },
                 { "dllSha256", HashFile(typeof(PathFinderPlugin).Assembly.Location) },
                 { "leylineCompatibility", leyline.Available },
+                { "foundationSha256", HashFile(typeof(KingdomFoundation.Api.FoundationApi).Assembly.Location) },
                 { "checks", new JsonArray(checks.Select(c => new JsonValue(c)).ToArray()) }, { "count", checks.Count }, { "error", error ?? "" }
             };
             File.WriteAllText(Path.Combine(directory, "runtime-tests.json"), report.ToString());

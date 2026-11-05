@@ -2,6 +2,8 @@ param([string]$GameRoot = (Join-Path $PSScriptRoot '..\..'), [switch]$StageForNe
 $ErrorActionPreference = 'Stop'
 $GameRoot = (Resolve-Path -LiteralPath $GameRoot).Path
 if (!(Test-Path -LiteralPath (Join-Path $GameRoot 'KingdomInc.exe'))) { throw 'Choose the KingdomInc game directory.' }
+$foundation = Join-Path $GameRoot 'BepInEx\plugins\Foundation\Foundation.dll'
+if (!(Test-Path -LiteralPath $foundation) -or [Reflection.AssemblyName]::GetAssemblyName($foundation).Version -lt [Version]'0.5.0') { throw 'Install Foundation 0.5.0 or later before Path Finder.' }
 $gameRunning = [bool](Get-Process -Name KingdomInc -ErrorAction SilentlyContinue)
 if ($gameRunning -and !$StageForNextLaunch) { throw 'Close Kingdom Inc before installing, or stage a new installation with -StageForNextLaunch.' }
 $source = Join-Path $PSScriptRoot 'bin\Release\netstandard2.1\PathFinder.dll'

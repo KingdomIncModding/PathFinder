@@ -1,44 +1,39 @@
-Path Finder 1.0.3 by Urakka
+Path Finder 1.1.0 by Urakka
 
-Hover any node to highlight pipes to its immediate parents and immediate children.
-Each pipe has ONE solid bright neon color from a rainbow palette, with a glow.
-Overlapping straight sections use parallel colored lanes so each line stays visible.
-Only highlights move; native pipe positions and saved bends are unchanged.
+Hover a node to highlight its immediate input and output paths.
+Each line has one solid neon color with a soft glow. Overlapping straight
+sections separate into parallel colored lanes without moving the original pipes.
 
-Click the TINY pin at a node's top-left to keep its direct paths highlighted.
-Pins have bronze bevels, dark enamel, a tilted gold tack and a cyan locked-state rim.
-Click again to unpin. Cyan means pinned. Multiple pins and hover work together.
-Pins are session-only; saves are unchanged. Indirect ancestors/descendants are excluded.
+UNLOCK
+Research Path Finder for 100 gold under Tech Tree > Mods.
+This enables hover highlights and pin buttons in that kingdom.
+The unlock is saved with your research progress.
 
-OPTIONAL LEYLINE CONDUITS SUPPORT
-Hover or pin a conduit, or its directly wired machine, to highlight matching
-opposite-mode conduits and their pipes. The whole leyline path shares one color,
-including branches and the outlines identifying connected tiles.
-Pin before switching workshop tabs to find its partners on the other tab.
-Names follow Leyline Conduits matching rules; tested with version 0.2.0.
-Leyline Conduits is optional and no extra save data is created.
+PINS
+Click the tiny top-left pin to keep a node's paths highlighted.
+Cyan means pinned. Click again to unpin. Multiple pins and hover work together.
+Pins last for the loaded kingdom session and are not saved.
 
 REQUIREMENTS
-Kingdom Inc Unity Mono build and BepInEx 5.
-Tested: Release v1.0.10 / Unity 6000.3.27f2 / BepInEx 5.4.23.6.
-No other mod required. Manual installation supported; Vortex untested.
+Kingdom Inc, Windows Mono build.
+BepInEx 5 for Windows x64.
+Foundation 0.5.0 or later, installed separately.
 
 INSTALL / UPDATE
 Close the game. Extract this ZIP into the game directory.
 Expected file: BepInEx/plugins/PathFinder/PathFinder.dll
-Start the game and hover or pin a connected node.
+Launch, research Path Finder under Tech Tree > Mods, then hover or pin a node.
 For updates, close the game and replace the DLL.
+
+SETTINGS
+BepInEx/config/urakka.kingdominc.pathfinder.cfg
+Highlights / Enabled: true. Highlights / Width: 5 (2-12 world units).
+Eight colors repeat when needed.
 
 REMOVE
 Close the game and remove BepInEx/plugins/PathFinder.
-No save cleanup is needed; the mod adds no saved nodes or data.
-
-SETTINGS
-BepInEx/config/urakka.kingdominc.pathfinder.cfg, created on first normal launch.
-Highlights / Enabled: true. Highlights / Width: 5 (2-12 world units).
-Eight colors are reused when more than eight lines are visible.
+Pins and highlights add no placed nodes or items.
 
 CREDITS / SUPPORT
-Author: Urakka. Pin art is procedural; no bundled game assets.
-Diagnostic workflow adapted from the existing PartyNode/LedgerMod projects.
-Source licensing not selected. Logs: BepInEx/LogOutput.log.
+Author: Urakka. Procedural pin artwork; no game assets bundled.
+Source license not selected. Logs: BepInEx/LogOutput.log.

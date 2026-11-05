@@ -14,10 +14,11 @@ using UnityEngine.EventSystems;
 namespace KingdomPathFinder
 {
     [BepInPlugin(Id, "Path Finder", Version)]
+    [BepInDependency("urakka.kingdominc.foundation", "0.5.0")]
     [BepInDependency(LeylineCompatibility.PluginId, BepInDependency.DependencyFlags.SoftDependency)]
     public sealed partial class PathFinderPlugin : BaseUnityPlugin
     {
-        public const string Id = "urakka.kingdominc.pathfinder", Version = "1.0.3";
+        public const string Id = "urakka.kingdominc.pathfinder", Version = "1.1.0";
         internal static bool Diagnostic => Environment.GetCommandLineArgs().Contains("-pathfinder-smoke");
         readonly Dictionary<FlowPipe, RainbowPath> paths = new Dictionary<FlowPipe, RainbowPath>();
         readonly HashSet<FlowPipe> desired = new HashSet<FlowPipe>();
@@ -47,6 +48,7 @@ namespace KingdomPathFinder
         void Awake()
         {
             Instance = this;
+            RegisterResearch();
             leyline = new LeylineCompatibility();
             enabledSetting = Config.Bind("Highlights", "Enabled", true, "Highlight immediate input and output pipes while hovering a node.");
             widthSetting = Config.Bind("Highlights", "Width", 5f,
@@ -69,13 +71,13 @@ namespace KingdomPathFinder
 
         internal void EnsurePin(WorldFlowElement node)
         {
-            if (!node || pins.ContainsKey(node)) return;
+            if (!Unlocked || !node || pins.ContainsKey(node)) return;
             pins.Add(node, PathPin.Create(this, node));
         }
 
         internal void TogglePin(WorldFlowElement node)
         {
-            if (!node) return;
+            if (!Unlocked || !node) return;
             if (!pinned.Add(node)) pinned.Remove(node);
             if (pins.TryGetValue(node, out var pin)) pin.SetPinned(pinned.Contains(node));
         }
@@ -91,10 +93,11 @@ namespace KingdomPathFinder
             if (failed) return;
             try
             {
-                var node = enabledSetting.Value && WorldFlowManager.Visible &&
+                UpdateResearchPins();
+                var node = Unlocked && enabledSetting.Value && WorldFlowManager.Visible &&
                     !(DragDropManager.Instance && DragDropManager.Instance.Busy)
                     ? FindHoveredNode(PlayerInput.MouseUI) : null;
-                if (enabledSetting.Value && WorldFlowManager.Visible) Refresh(node);
+                if (Unlocked && enabledSetting.Value && WorldFlowManager.Visible) Refresh(node);
                 else ClearPaths();
             }
             catch (Exception error)
@@ -138,6 +141,7 @@ namespace KingdomPathFinder
 
         internal void Refresh(WorldFlowElement node)
         {
+            if (!Unlocked) { ClearPaths(); return; }
             CollectDirectPaths(node && node.isActiveAndEnabled ? node.Element : null, desired);
             desiredConduits.Clear();
             leyline.Collect(node && node.isActiveAndEnabled ? node.Element : null, desired, desiredConduits);
@@ -257,6 +261,7 @@ namespace KingdomPathFinder
             if (rainbowMaterial) Destroy(rainbowMaterial);
             diagnostics?.UnpatchSelf();
             hooks?.UnpatchSelf();
+            research?.Dispose();
             foreach (var pin in pins.Values) if (pin) { pin.Owner = null; Destroy(pin.gameObject); }
             pins.Clear(); pinned.Clear(); Instance = null;
         }

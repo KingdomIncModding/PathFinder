@@ -1,3 +1,9 @@
+1.1.0
+- Add Path Finder research to Tech Tree > Mods for 100 gold.
+- Unlock hover highlights and tiny pin buttons after research in each kingdom.
+- Save the unlock through the game's normal research progress.
+- Require Foundation 0.4.1 or later, installed separately.
+
 1.0.3
 - Add optional compatibility with Leyline Conduits 0.2.0.
 - Use one shared neon color across each leyline route, including branches, connected pipes and conduit outlines.

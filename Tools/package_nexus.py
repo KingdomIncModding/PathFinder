@@ -48,19 +48,20 @@ def main():
     for report in reports:
         assert report['passed'] and report['count'] >= 100 and not report['error']
         assert report['version'] == VERSION and report['dllSha256'] == sha(dll)
+        assert report['foundationSha256'] == sha((GAME / 'BepInEx/plugins/Foundation/Foundation.dll').read_bytes())
     assert reports[0]['leylineCompatibility'] is False
     assert reports[1]['leylineCompatibility'] is True
     assert f"Path Finder diagnostic passed: {reports[0]['count']} checks." in (PROJECT / 'Verification/unity-isolated.log').read_text()
     OUT.mkdir(parents=True, exist_ok=True)
     payload = {'BepInEx/plugins/PathFinder/PathFinder.dll': dll}
-    for name in ('README.txt', 'CHANGELOG.txt'):
+    for name in ('README.txt', 'CHANGELOG.txt', 'REQUIREMENTS.txt'):
         payload['Path Finder ' + name] = (PROJECT / 'Nexus' / name).read_bytes()
     player_zip = OUT / f'KingdomInc-PathFinder-{VERSION}.zip'
     archive(player_zip, payload)
 
     # Never recurse through Verification's runtime junctions or include game binaries.
     names = ['PathFinder.csproj', 'PathFinderPlugin.cs', 'RainbowPath.cs', 'PathLaneLayout.cs', 'PathPin.cs',
-             'RuntimeCheck.cs', 'LeylineCompatibility.cs', 'ConduitHighlight.cs', 'LeylineRuntimeCheck.cs', 'README.md', '.gitignore', 'install.ps1', 'verify-isolated.ps1',
+             'RuntimeCheck.cs', 'ResearchCheck.cs', 'PathResearch.cs', 'LeylineCompatibility.cs', 'ConduitHighlight.cs', 'LeylineRuntimeCheck.cs', 'README.md', '.gitignore', 'install.ps1', 'verify-isolated.ps1',
              'Tools/package_nexus.py', 'Nexus/README.txt', 'Nexus/CHANGELOG.txt',
              'Nexus/NEXUS_DESCRIPTION.bbcode.txt', 'Nexus/SUMMARY.txt',
              'Assets/path-finder-hover.png', 'Assets/path-finder-pin-styles.png']
@@ -78,6 +79,7 @@ def main():
               'gameVersion': reports[0]['gameVersion'], 'unityVersion': reports[0]['unityVersion'],
               'bepInExVersion': reports[0]['bepInExVersion'], 'dllSha256': sha(dll),
               'referenceGameAssemblySha256': sha((GAME / 'KingdomInc_Data/Managed/Assembly-CSharp.dll').read_bytes()),
+              'foundationSha256': reports[0]['foundationSha256'],
               'runtimeChecksPassed': reports[0]['count'], 'companionChecksPassed': reports[1]['count'],
               'leylineCompatibilityVerified': reports[1]['leylineCompatibility'],
               'mainArchiveFiles': sorted(payload), 'sourceArchiveFiles': len(sources),

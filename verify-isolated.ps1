@@ -15,6 +15,10 @@ New-Item -ItemType Directory -Path (Join-Path $bep 'plugins\PathFinder'),(Join-P
 New-Item -ItemType Junction -Path (Join-Path $bep 'core') -Value (Join-Path $gameRoot 'BepInEx\core') | Out-Null
 Copy-Item -LiteralPath (Join-Path $gameRoot 'BepInEx\config\BepInEx.cfg') -Destination (Join-Path $bep 'config\BepInEx.cfg')
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'bin\Release\netstandard2.1\PathFinder.dll') -Destination (Join-Path $bep 'plugins\PathFinder\PathFinder.dll')
+$foundation = Join-Path $gameRoot 'BepInEx\plugins\Foundation\Foundation.dll'
+if ([Reflection.AssemblyName]::GetAssemblyName($foundation).Version -lt [Version]'0.5.0') { throw 'Path Finder requires Foundation 0.5.0 or later.' }
+New-Item -ItemType Directory -Path (Join-Path $bep 'plugins\Foundation') -Force | Out-Null
+Copy-Item -LiteralPath $foundation -Destination (Join-Path $bep 'plugins\Foundation\Foundation.dll')
 if ($WithExistingPlugins) {
     foreach ($plugin in @('PartyNode','SharableBlueprints','KingdomFactoryApi','LedgerMod','LeylineConduits')) {
         $pluginSource = Join-Path $gameRoot ('BepInEx\plugins\' + $plugin + '\' + $plugin + '.dll')

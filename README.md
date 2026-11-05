@@ -1,66 +1,54 @@
-# Path Finder 1.0.3
+# Path Finder 1.1.0
 
-[Download the latest release](https://github.com/urakkaamyx/KingdomInc_PathFinder/releases/latest) · [Source and issues](https://github.com/urakkaamyx/KingdomInc_PathFinder)
+[Downloads](https://www.nexusmods.com/kingdominc/mods/8) · [Source and issues](https://github.com/urakkaamyx/KingdomInc_PathFinder)
 
-Hover a Kingdom Inc node to highlight every pipe to its **immediate parents and immediate children**. Each line uses **one solid bright neon color**, chosen from a rainbow palette, with a wider glow. Highlights follow the existing pipe bends and mirrored ports. Indirect ancestors and descendants stay unhighlighted.
+See a node's immediate input and output paths at a glance. Hover a node to highlight its direct connections in bright neon colors, with **one solid color per line** and a soft glow.
 
-When highlighted pipes share a straight section, their colors separate into narrow parallel lanes and fan back into the original path at either end. This keeps overlapping colors visible without changing the native pipes, their colliders, or saved bend positions. Ordinary crossings and separate lines retain their existing shape.
+Research **Path Finder** for **100 gold** under **Tech Tree → Mods** to enable highlights and pin buttons in that kingdom. The unlock is saved with your research progress.
 
-A **tiny pin button at each node's top-left corner** locks its direct paths on screen after you move the mouse away. The button has a beveled bronze frame, a burgundy enamel face and a tilted gold thumbtack. Hover brightens the metal; clicking adds a cyan rim and glint. Click again to unpin. You can pin multiple nodes and hover another node at the same time; shared pipes are drawn once and keep their color while visible. Pins last for the current loaded kingdom session and are not written into saves. Hidden kingdoms do not show their pinned paths; switching back restores them. Deleting a node removes its pin.
+## Highlights and pins
 
-When **Leyline Conduits** is installed, hovering or pinning a conduit (or a machine directly wired to it) also highlights matching opposite-mode conduits and their attached pipes. All highlighted pipes and conduit outlines on that leyline share one neon color, including branches and partners on other tabs. Different named leylines use separate colors from the palette. Channel matching follows Leyline Conduits' case-insensitive names. Pin the source before switching workshop tabs to find its visible partners there. Renaming, disconnecting and deleting conduits updates highlights immediately. No new connection or save data is created; Leyline Conduits remains optional. Verified with Leyline Conduits **0.2.0**.
+Highlights follow pipe bends and mirrored ports. Where straight pipes overlap, their colors separate into narrow parallel lanes so every line remains visible. The original pipes and saved bends stay in place.
 
-## Install, update, and remove
+Click the **tiny pin at a node's top-left** to keep its paths highlighted after moving away. Bronze pins gain a cyan rim when pinned; click again to unpin. Multiple pins and hover work together, and shared pipes are drawn once.
 
-Requires Kingdom Inc's Unity Mono build and BepInEx 5. Tested against **Release v1.0.10**, Unity **6000.3.27f2**, and BepInEx **5.4.23.6**. No other mod is required.
+Pins last for the loaded kingdom session. Hidden paths disappear when switching tabs and return when visible again. Popups block hover highlights behind them. Dragging suppresses hover selection while pinned paths stay visible.
 
-Close the game and extract the player ZIP into the game directory. The resulting file must be `BepInEx/plugins/PathFinder/PathFinder.dll`. Start the game and hover a connected node or click its pin. For an update, close the game and replace that DLL. For removal, close the game and delete the PathFinder plugin folder. Existing saves can be used after removal; this mod adds no model types or saved data.
+Eight neon colors repeat when needed. Colors and pins are not saved.
 
-Manual installation is supported. Vortex deployment has not been tested.
+## Requirements
 
-The local installer accepts `-StageForNextLaunch` while the game is running. For updates, it preserves the running game's mapped DLL in the project's backup folder and places a fresh DLL for the next launch. Restart to see the new version.
+- Kingdom Inc, Windows Mono build.
+- BepInEx 5 for Windows x64.
+- Foundation 0.5.0 or later, installed separately.
 
-On first normal launch, settings appear in `BepInEx/config/urakka.kingdominc.pathfinder.cfg`:
+## Install or update
+
+Close the game and extract the player ZIP into the folder containing `KingdomInc.exe`. The plugin belongs at `BepInEx/plugins/PathFinder/PathFinder.dll`.
+
+Launch the game, open **Tech Tree → Mods**, and research **Path Finder**. Hover a connected node or click its pin. To update, close the game and replace the DLL.
+
+## Settings
+
+Settings appear in `BepInEx/config/urakka.kingdominc.pathfinder.cfg` after launching:
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
-| Highlights / Enabled | true | Enable hover and pinned path highlights |
-| Highlights / Width | 5 | Solid core width in world units (2–12); glow scales with it |
+| Highlights / Enabled | true | Enable hover and pinned highlights after research |
+| Highlights / Width | 5 | Solid line width in world units, from 2 to 12 |
 
-Eight neon colors are reused when more than eight lines are highlighted. Colors are assigned as lines become visible and are not saved. Popups block hover highlighting behind them. Dragging suppresses hover selection; pinned paths remain visible. The original pipe renderer retains its normal transfer/rejection colors underneath the temporary highlight.
+## Remove
+
+Close the game and remove `BepInEx/plugins/PathFinder`. Pins and highlights add no placed nodes or items to your kingdom.
 
 ## Screenshots
 
-The center node highlights its two immediate parents and two immediate children; the farther pipes remain unchanged.
-
-![Actual Path Finder gameplay: direct paths highlighted](Assets/path-finder-hover.png)
-
-Enlarged render of the actual pin graphics: idle, hover and pinned. The in-game buttons remain 18 world units square.
+![Direct paths highlighted](Assets/path-finder-hover.png)
 
 ![Pin states: idle, hover and pinned](Assets/path-finder-pin-styles.png)
 
-## Build and verify
+## Credits and support
 
-Keep this source at `<game>/_Mods/PathFinder` with local game and BepInEx assemblies available. Requires a .NET SDK supporting .NET Standard 2.1 and Python 3 for packaging.
+Author: Urakka. Pin artwork is drawn procedurally; no game assets are bundled. Source license not selected.
 
-```powershell
-dotnet build _Mods/PathFinder/PathFinder.csproj -c Release
-& ./_Mods/PathFinder/verify-isolated.ps1
-& ./_Mods/PathFinder/verify-isolated.ps1 -WithExistingPlugins
-& ./_Mods/PathFinder/install.ps1
-python _Mods/PathFinder/Tools/package_nexus.py
-```
-
-The diagnostic launches a private runtime with a disposable kingdom. Save writes, latest-save loading, and Steam achievements are blocked. It exercises actual UI raycasts and mouse input, both direct parents and children, solid colors, bent/straight/mirrored pipes, rewiring, loops, pin/unpin clicks, combined pins and hover, visibility changes, cleanup, and deletion of a pinned node. Reports and gameplay screenshots are under `Verification/`.
-
-The optional companion run loads installed PartyNode, SharableBlueprints, KingdomFactoryApi, LedgerMod, and LeylineConduits DLLs, with the API on a private port. It checks the native-node fixture and Leyline Conduits hover, matching channels, opposite modes, pins, retuning, tab switching and cleanup. It does not retest every companion feature or custom-node layout.
-
-Packaging requires matching built, installed, and tested DLLs and passing isolated/companion reports. It checks archive paths, clean extraction, and SHA-256. Game binaries, BepInEx binaries, saves, and configuration files are excluded.
-
-## Credits
-
-Author: Urakka. Pin art is drawn procedurally; no game assets are redistributed. The isolated diagnostic workflow follows the existing PartyNode/LedgerMod projects in this workspace. Source licensing is not yet selected.
-
-Plugin ID: `urakka.kingdominc.pathfinder`. Assembly: `PathFinder.dll`. Repository: [urakkaamyx/KingdomInc_PathFinder](https://github.com/urakkaamyx/KingdomInc_PathFinder).
-
-For troubleshooting, check `BepInEx/LogOutput.log` and include the game, loader, and mod versions plus the connected node types.
+For bug reports, include `BepInEx/LogOutput.log`, your game and Path Finder versions, and the affected node types.

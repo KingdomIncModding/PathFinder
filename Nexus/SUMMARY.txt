@@ -1,1 +1,1 @@
-Hover or pin a node to highlight its immediate input and output paths. Each pipe uses one solid neon color, with tiny bronze pin buttons to keep connections visible.
+Research Path Finder, then hover or pin nodes to reveal their immediate input and output paths. Each line uses one solid neon color, and tiny bronze pins keep selected paths visible.
