@@ -1,1 +1,0 @@
-Research Path Finder, then hover or pin nodes to reveal their immediate input and output paths. Each line uses one solid neon color, and tiny bronze pins keep selected paths visible.

@@ -1,0 +1,67 @@
+{
+  "id": "PathFinder",
+  "name": "Path Finder",
+  "version": "1.1.0",
+  "author": "Urakka",
+  "description": "See a node's immediate input and output paths at a glance. Hover a node to highlight its direct connections in bright neon colors with one solid color per line and a soft glow. Pin connections to keep them on screen.",
+  "repository": {
+    "platform": "GitHub",
+    "owner": "urakkaamyx",
+    "name": "KingdomInc_PathFinder",
+    "url": "https://github.com/urakkaamyx/KingdomInc_PathFinder",
+    "branch": "main",
+    "visibility": "public",
+    "topics": [
+      "kingdominc",
+      "bepinex",
+      "mod",
+      "quality-of-life",
+      "pathfinding",
+      "ui"
+    ],
+    "latestTag": "v1.1.0"
+  },
+  "distribution": {
+    "nexus": {
+      "game": "kingdominc",
+      "modId": 8,
+      "fileId": 8298789,
+      "url": "https://www.nexusmods.com/kingdominc/mods/8",
+      "requirements": [
+        {
+          "name": "Foundation",
+          "url": "https://www.nexusmods.com/kingdominc/mods/18",
+          "version": ">=0.11.0",
+          "optional": false
+        },
+        {
+          "name": "BepInEx 5",
+          "url": "https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.6",
+          "version": ">=5.4.23.6",
+          "optional": false
+        }
+      ],
+      "tags": [
+        "AI-Generated Content",
+        "Quality of Life",
+        "User Interface",
+        "Utilities for Players"
+      ],
+      "tagsVerified": true,
+      "requirementsVerified": true
+    }
+  },
+  "development": {
+    "framework": "Foundation",
+    "language": "C#",
+    "target": "netstandard2.1",
+    "dependencies": [
+      "BepInEx 5",
+      "Foundation >= 0.11.0"
+    ]
+  },
+  "publishing": {
+    "githubReleases": true,
+    "nexusMods": true
+  }
+}

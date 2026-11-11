@@ -4,9 +4,11 @@
     <LangVersion>latest</LangVersion>
     <Version>1.1.0</Version>
     <AssemblyName>PathFinder</AssemblyName>
-    <GameRoot>$(MSBuildThisFileDirectory)..\..\</GameRoot>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GameRoot Condition="'$(GameRoot)' == ''">$(MSBuildThisFileDirectory)..\..\..\</GameRoot>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="src\**\*.cs" />
     <Reference Include="Foundation"><HintPath>$(GameRoot)BepInEx\plugins\Foundation\Foundation.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="BepInEx"><HintPath>$(GameRoot)BepInEx\core\BepInEx.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="0Harmony"><HintPath>$(GameRoot)BepInEx\core\0Harmony.dll</HintPath><Private>false</Private></Reference>

@@ -1,54 +1,53 @@
-# Path Finder 1.1.0
+# Path Finder
 
-[Downloads](https://www.nexusmods.com/kingdominc/mods/8) · [Source and issues](https://github.com/urakkaamyx/KingdomInc_PathFinder)
+[GitHub releases](https://github.com/urakkaamyx/KingdomInc_PathFinder/releases) · [Nexus Mods](https://www.nexusmods.com/kingdominc/mods/8) · Version 1.1.0
 
-See a node's immediate input and output paths at a glance. Hover a node to highlight its direct connections in bright neon colors, with **one solid color per line** and a soft glow.
+See a node's immediate input and output paths at a glance. Hover a node to highlight its direct connections in bright neon colors, with one solid color per line and a soft glow.
 
 Research **Path Finder** for **100 gold** under **Tech Tree → Mods** to enable highlights and pin buttons in that kingdom. The unlock is saved with your research progress.
 
-## Highlights and pins
+## Features
 
-Highlights follow pipe bends and mirrored ports. Where straight pipes overlap, their colors separate into narrow parallel lanes so every line remains visible. The original pipes and saved bends stay in place.
-
-Click the **tiny pin at a node's top-left** to keep its paths highlighted after moving away. Bronze pins gain a cyan rim when pinned; click again to unpin. Multiple pins and hover work together, and shared pipes are drawn once.
-
-Pins last for the loaded kingdom session. Hidden paths disappear when switching tabs and return when visible again. Popups block hover highlights behind them. Dragging suppresses hover selection while pinned paths stay visible.
-
-Eight neon colors repeat when needed. Colors and pins are not saved.
+- **Hover Path Tracing:** Hover any workshop node to immediately highlight its direct input and output pipes.
+- **Solid Neon Colors:** Distinct bright neon colors per line with an outer glow, cycling across 8 unique color channels.
+- **Persistent Pins:** Click the tiny pin at a node's top-left to keep its paths highlighted after moving away. Bronze pins gain a cyan rim when pinned; click again to unpin.
+- **Multi-Pin & Hover Integration:** Pin multiple nodes simultaneously. Shared pipes are drawn once without visual clutter.
+- **Lane Separation:** Where straight pipes overlap, colors separate into narrow parallel lanes so every line remains visible.
+- **Dynamic Routing:** Highlights accurately follow pipe bends, reroutes, and mirrored ports.
+- **Configurable Width:** Customize line thickness from 2 to 12 world units via config file.
 
 ## Requirements
 
-- Kingdom Inc, Windows Mono build.
-- BepInEx 5 for Windows x64.
-- Foundation 0.5.0 or later, installed separately.
+- Kingdom Inc (Windows x64 Mono)
+- [BepInEx 5](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.6) (5.4.23.6 or newer)
+- [Foundation](https://www.nexusmods.com/kingdominc/mods/18) (0.11.0 or newer)
 
-## Install or update
+## Installation
 
-Close the game and extract the player ZIP into the folder containing `KingdomInc.exe`. The plugin belongs at `BepInEx/plugins/PathFinder/PathFinder.dll`.
+1. Install BepInEx 5 for Kingdom Inc.
+2. Install Foundation (0.11.0 or newer).
+3. Extract the release ZIP into your Kingdom Inc game directory.
+4. Verify the file exists at `BepInEx/plugins/PathFinder/PathFinder.dll`.
+5. Launch the game, open **Tech Tree → Mods**, and research **Path Finder**!
 
-Launch the game, open **Tech Tree → Mods**, and research **Path Finder**. Hover a connected node or click its pin. To update, close the game and replace the DLL.
+## Usage and Settings
 
-## Settings
+- **Unlocking:** Open **Tech Tree → Mods** and research **Path Finder** (100 gold).
+- **Pinning:** Click the small bronze pin icon at the top-left of any placed workshop node to lock its path highlights. Click again to unpin.
+- **Settings:** Configuration options appear in `BepInEx/config/urakka.kingdominc.pathfinder.cfg`:
+  - `Highlights / Enabled` (default `true`): Enable or disable hover and pinned highlights after research.
+  - `Highlights / Width` (default `5`): Solid line width in world units (range 2.0 to 12.0).
 
-Settings appear in `BepInEx/config/urakka.kingdominc.pathfinder.cfg` after launching:
+## Compatibility
 
-| Setting | Default | Meaning |
-| --- | --- | --- |
-| Highlights / Enabled | true | Enable hover and pinned highlights after research |
-| Highlights / Width | 5 | Solid line width in world units, from 2 to 12 |
+| Class.Method | Hook Type | Impact |
+|---|---|---|
+| WorldFlowElement.SetElement | Harmony Postfix | Attaches path tracing pin component to workshop nodes when elements are instantiated or refreshed. |
 
-## Remove
+## Removal
 
-Close the game and remove `BepInEx/plugins/PathFinder`. Pins and highlights add no placed nodes or items to your kingdom.
+Close the game and delete `BepInEx/plugins/PathFinder/`. Pins and highlights add no placed nodes or custom items to your kingdom saves.
 
-## Screenshots
+## Credits and Source
 
-![Direct paths highlighted](Assets/path-finder-hover.png)
-
-![Pin states: idle, hover and pinned](Assets/path-finder-pin-styles.png)
-
-## Credits and support
-
-Author: Urakka. Pin artwork is drawn procedurally; no game assets are bundled. Source license not selected.
-
-For bug reports, include `BepInEx/LogOutput.log`, your game and Path Finder versions, and the affected node types.
+Created by **Urakka** (rockyamyx). [Source code on GitHub](https://github.com/urakkaamyx/KingdomInc_PathFinder). Game artwork belongs to its respective owners.
