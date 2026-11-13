@@ -1,9 +1,9 @@
 {
   "id": "PathFinder",
   "name": "Path Finder",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Urakka",
-  "description": "See a node's immediate input and output paths at a glance. Hover a node to highlight its direct connections in bright neon colors with one solid color per line and a soft glow. Pin connections to keep them on screen.",
+  "description": "For Kingdom Inc game version 1.0.14. See a node's immediate input and output paths at a glance. Hover a node to highlight its direct connections in bright neon colors with one solid color per line and a soft glow. Pin connections to keep them on screen.",
   "repository": {
     "platform": "GitHub",
     "owner": "urakkaamyx",
@@ -31,8 +31,10 @@
         {
           "name": "Foundation",
           "url": "https://www.nexusmods.com/kingdominc/mods/18",
-          "version": ">=0.11.0",
-          "optional": false
+          "version": ">=0.14.0",
+          "optional": false,
+          "type": "nexus",
+          "minimumVersion": "0.14.0"
         },
         {
           "name": "BepInEx 5",
@@ -48,7 +50,8 @@
         "Utilities for Players"
       ],
       "tagsVerified": true,
-      "requirementsVerified": true
+      "requirementsVerified": true,
+      "runtimeVersionId": "46785078755459"
     }
   },
   "development": {
@@ -57,11 +60,13 @@
     "target": "netstandard2.1",
     "dependencies": [
       "BepInEx 5",
-      "Foundation >= 0.11.0"
-    ]
+      "Foundation 0.14.0"
+    ],
+    "gameIntegration": "Foundation"
   },
   "publishing": {
     "githubReleases": true,
-    "nexusMods": true
+    "nexusMods": true,
+    "archivePreviousReleases": false
   }
 }
