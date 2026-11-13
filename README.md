@@ -2,7 +2,7 @@
 
 **Current release: 1.1.1 — for Kingdom Inc game version 1.0.14.**
 
-[GitHub releases](https://github.com/urakkaamyx/KingdomInc_PathFinder/releases) · [Nexus Mods](https://www.nexusmods.com/kingdominc/mods/8) · Version 1.1.1
+[GitHub releases](https://github.com/KingdomIncModding/KingdomInc_PathFinder/releases) · [Nexus Mods](https://www.nexusmods.com/kingdominc/mods/8) · Version 1.1.1
 
 See a node's immediate input and output paths at a glance. Hover a node to highlight its direct connections in bright neon colors, with one solid color per line and a soft glow.
 
@@ -52,4 +52,4 @@ Close the game and delete `BepInEx/plugins/PathFinder/`. Pins and highlights add
 
 ## Credits and Source
 
-Created by **Urakka** (rockyamyx). [Source code on GitHub](https://github.com/urakkaamyx/KingdomInc_PathFinder). Game artwork belongs to its respective owners.
+Created by **Urakka** (rockyamyx). [Source code on GitHub](https://github.com/KingdomIncModding/KingdomInc_PathFinder). Game artwork belongs to its respective owners.

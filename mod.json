@@ -6,9 +6,9 @@
   "description": "For Kingdom Inc game version 1.0.14. See a node's immediate input and output paths at a glance. Hover a node to highlight its direct connections in bright neon colors with one solid color per line and a soft glow. Pin connections to keep them on screen.",
   "repository": {
     "platform": "GitHub",
-    "owner": "urakkaamyx",
+    "owner": "KingdomIncModding",
     "name": "KingdomInc_PathFinder",
-    "url": "https://github.com/urakkaamyx/KingdomInc_PathFinder",
+    "url": "https://github.com/KingdomIncModding/KingdomInc_PathFinder",
     "branch": "main",
     "visibility": "public",
     "topics": [
