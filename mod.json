@@ -7,8 +7,8 @@
   "repository": {
     "platform": "GitHub",
     "owner": "KingdomIncModding",
-    "name": "KingdomInc_PathFinder",
-    "url": "https://github.com/KingdomIncModding/KingdomInc_PathFinder",
+    "name": "PathFinder",
+    "url": "https://github.com/KingdomIncModding/PathFinder",
     "branch": "main",
     "visibility": "public",
     "topics": [
