@@ -93,7 +93,8 @@ namespace KingdomPathFinder
                 line.enabled = Source.enabled && Source.positionCount >= 2;
                 line.useWorldSpace = Source.useWorldSpace;
                 line.sortingLayerID = Source.sortingLayerID;
-                line.sortingOrder = Source.sortingOrder + i + 1;
+                // Reserve +1 for Bottleneck Heatmap; Path Finder glow/core layers sit cleanly above at +2..+4.
+                line.sortingOrder = Source.sortingOrder + i + 2;
                 line.widthMultiplier = width * (i == 0 ? 3f : i == 1 ? 1.9f : 1f);
                 line.positionCount = positions.Length;
                 line.SetPositions(positions);

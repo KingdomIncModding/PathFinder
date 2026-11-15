@@ -75,7 +75,7 @@ namespace KingdomPathFinder
                 AddConnected(output.ConnectedPipe, node, result);
         }
 
-        public const string Id = "urakka.kingdominc.pathfinder", Version = "1.1.1";
+        public const string Id = "urakka.kingdominc.pathfinder", Version = "1.1.2";
         readonly Dictionary<WorkspacePipe, RainbowPath> paths = new Dictionary<WorkspacePipe, RainbowPath>();
         readonly HashSet<WorkspacePipe> desired = new HashSet<WorkspacePipe>();
         readonly List<WorkspacePipe> removed = new List<WorkspacePipe>();
@@ -98,9 +98,19 @@ namespace KingdomPathFinder
         PointerEventData pointer;
         EventSystem pointerSystem;
         IDisposable hooks;
+        IDisposable editHook;
+        IDisposable deserializeHook;
         KingdomFoundation.Api.FoundationModContext modContext;
-        bool failed;
+        bool highlightsPaused;
+        int consecutiveFailures;
+        float retryAtTime;
+        string lastError;
+        GameKingdom activeSession;
+        int activeWorkspace = -1;
+        bool lastEnabledSetting = true;
         PathFinderResearch research;
+        internal string LastError => lastError;
+        internal bool HighlightsPausedDueToError => highlightsPaused;
         internal bool Unlocked => research?.Unlocked == true;
         internal IEnumerable<PathPin> ResearchPins => pins.Values;
 
@@ -130,7 +140,14 @@ namespace KingdomPathFinder
             leyline = new LeylineCompatibility();
             enabledSetting = Config.Bind("Highlights", "Enabled", true, "Highlight immediate input and output pipes while hovering a node.");
             widthSetting = Config.Bind("Highlights", "Width", 5f, new ConfigDescription("Width of each solid neon line in world units; glow scales with it.", new AcceptableValueRange<float>(2f, 12f)));
-            hooks = FoundationApi.GameHooks.Subscribe(Id, GameHookPoints.BuildingBound, after: call => AddPinAfterSet(call.View as UnityEngine.Behaviour));
+            lastEnabledSetting = enabledSetting.Value;
+            hooks = FoundationApi.GameHooks.Subscribe(Id, GameHookPoints.BuildingBound, after: call =>
+            {
+                AddPinAfterSet(call.View as UnityEngine.Behaviour);
+                Instance?.leyline?.InvalidateCache();
+            });
+            editHook = FoundationApi.ExecutionHooks.Subscribe(Id, GameExecutionPoints.WorkspaceEdit, _ => null, (_, __) => Instance?.leyline?.InvalidateCache());
+            deserializeHook = FoundationApi.GameHooks.Subscribe(Id, GameHookPoints.BuildingDeserialize, after: _ => Instance?.leyline?.InvalidateCache());
             Logger.LogInfo("Path Finder ready: hover or pin a node for solid neon paths to its immediate parents and children.");
             if (leyline.Available)
                 Logger.LogInfo("Leyline Conduits compatibility enabled.");
@@ -169,23 +186,84 @@ namespace KingdomPathFinder
 
         void LateUpdate()
         {
-            if (failed)
+            var currentKingdom = FoundationApi.Kingdom;
+            int currentWorkspace = currentKingdom != null ? currentKingdom.CurrentWorkspace : -1;
+            bool enabledNow = enabledSetting.Value;
+
+            if (!ReferenceEquals(activeSession, currentKingdom))
+            {
+                activeSession = currentKingdom;
+                activeWorkspace = currentWorkspace;
+                ClearSessionState();
+                ResetErrorRecovery();
+            }
+            else if (currentWorkspace != activeWorkspace)
+            {
+                activeWorkspace = currentWorkspace;
+                ResetErrorRecovery();
+            }
+            else if (enabledNow != lastEnabledSetting)
+            {
+                lastEnabledSetting = enabledNow;
+                ResetErrorRecovery();
+            }
+
+            if (highlightsPaused || (retryAtTime > 0f && Time.unscaledTime < retryAtTime))
                 return;
+
             try
             {
                 research.UpdatePins();
-                var node = Unlocked && enabledSetting.Value && FoundationApi.UiAccess.IsWorkspaceVisible && !FoundationApi.UiAccess.IsDragDropBusy ? FindHoveredNode(FoundationApi.View.MouseUi) : null;
-                if (Unlocked && enabledSetting.Value && FoundationApi.UiAccess.IsWorkspaceVisible)
+                var node = Unlocked && enabledNow && FoundationApi.UiAccess.IsWorkspaceVisible && !FoundationApi.UiAccess.IsDragDropBusy ? FindHoveredNode(FoundationApi.View.MouseUi) : null;
+                if (Unlocked && enabledNow && FoundationApi.UiAccess.IsWorkspaceVisible)
                     Refresh(node);
                 else
                     ClearPaths();
+
+                if (consecutiveFailures > 0 || lastError != null)
+                    ResetErrorRecovery();
             }
             catch (Exception error)
             {
                 ClearPaths();
-                failed = true;
-                Logger.LogError("Path Finder disabled its highlights after an error: " + error);
+                consecutiveFailures++;
+                lastError = error.Message;
+                bool isTransient = error is MissingReferenceException || error is NullReferenceException;
+                if (isTransient && consecutiveFailures < 5)
+                {
+                    retryAtTime = Time.unscaledTime + 0.5f;
+                    Logger.LogWarning("Path Finder recovered from transient view state error and will retry: " + error.Message);
+                }
+                else if (consecutiveFailures >= 3)
+                {
+                    highlightsPaused = true;
+                    retryAtTime = float.PositiveInfinity;
+                    Logger.LogError("Path Finder paused its highlights after repeated errors (change tab/kingdom or toggle Highlights Enabled to retry): " + error);
+                    FoundationApi.UiAccess.ShowStatusMessage("Path Finder paused highlights after an error. Toggle Highlights or switch tabs/kingdoms to retry.");
+                }
+                else
+                {
+                    retryAtTime = Time.unscaledTime + 1.0f;
+                    Logger.LogError("Path Finder hit a highlight error and will retry: " + error);
+                }
             }
+        }
+
+        private void ClearSessionState()
+        {
+            ClearPaths();
+            leylineColors.Clear();
+            pinned.Clear();
+            pins.Clear();
+            leyline?.ResetSession();
+        }
+
+        private void ResetErrorRecovery()
+        {
+            highlightsPaused = false;
+            consecutiveFailures = 0;
+            retryAtTime = 0f;
+            lastError = null;
         }
 
         Color LeylineColor(WorkspaceObject conduit)
@@ -206,6 +284,8 @@ namespace KingdomPathFinder
             if (rainbowMaterial)
                 Destroy(rainbowMaterial);
             hooks?.Dispose();
+            editHook?.Dispose();
+            deserializeHook?.Dispose();
             modContext?.Dispose();
             foreach (var pin in pins.Values)
                 if (pin)
@@ -216,6 +296,9 @@ namespace KingdomPathFinder
 
             pins.Clear();
             pinned.Clear();
+            leylineColors.Clear();
+            leyline?.ResetSession();
+            activeSession = null;
             Instance = null;
         }
 
@@ -266,7 +349,7 @@ namespace KingdomPathFinder
                     continue;
                 if (!paths.TryGetValue(pipe, out var path))
                 {
-                    var source = pipe.World.GetComponentInChildren<LineRenderer>();
+                    var source = FoundationApi.WorkspaceVisuals.PipeLine(pipe.World);
                     if (!source)
                         continue;
                     if (!rainbowMaterial)

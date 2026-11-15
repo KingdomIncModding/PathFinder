@@ -20,3 +20,6 @@ obj/
 **/obj/
 .env
 .env.*
+# Local build outputs (never commit)
+/Release/
+/Debug/

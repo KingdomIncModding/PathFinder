@@ -1,8 +1,8 @@
 # Path Finder
 
-**Current release: 1.1.1 — for Kingdom Inc game version 1.0.14.**
+**Current release: 1.1.2 — for Kingdom Inc game version 1.0.14.**
 
-[GitHub releases](https://github.com/KingdomIncModding/PathFinder/releases) · [Nexus Mods](https://www.nexusmods.com/kingdominc/mods/8) · Version 1.1.1
+[GitHub releases](https://github.com/KingdomIncModding/PathFinder/releases) · [Nexus Mods](https://www.nexusmods.com/kingdominc/mods/8) · Version 1.1.2
 
 See a node's immediate input and output paths at a glance. Hover a node to highlight its direct connections in bright neon colors, with one solid color per line and a soft glow.
 
