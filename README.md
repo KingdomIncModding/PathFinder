@@ -1,5 +1,7 @@
 # Path Finder
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6V62AX30M)
+
 **Current release: 1.1.2 — for Kingdom Inc game version 1.0.14.**
 
 [GitHub releases](https://github.com/KingdomIncModding/PathFinder/releases) · [Nexus Mods](https://www.nexusmods.com/kingdominc/mods/8) · Version 1.1.2
@@ -53,3 +55,9 @@ Close the game and delete `BepInEx/plugins/PathFinder/`. Pins and highlights add
 ## Credits and Source
 
 Created by **Urakka** (rockyamyx). [Source code on GitHub](https://github.com/KingdomIncModding/PathFinder). Game artwork belongs to its respective owners.
+
+## Support
+
+If you enjoy these Kingdom Inc mods and tools, consider supporting development on Ko-fi!
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6V62AX30M)
